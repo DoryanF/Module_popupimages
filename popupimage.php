@@ -28,6 +28,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_.'popupimage/classes/Popup.php';
+
 class PopUpImage extends Module
 {
     public function __construct()
@@ -195,7 +197,24 @@ class PopUpImage extends Module
 
     public function hookDisplayHeader($params)
     {
-        // if (Configuration::get('POPUPACTIVE') == 1) {
+        $popup = PopUp::getPopUpActive();
+        $link = new Link();
+        dump($link->getBaseLink());
+        // dump(Tools::getMediaServer(_PS_MODULE_DIR_.$this->name.'/views/img/'.$popup[0]["popup_image"]));
+        $imagePath = _PS_MODULE_DIR_ . $this->name . '/views/img/' . $popup[0]["popup_image"];
+
+        if (!file_exists($imagePath)) {
+            // Log ou affiche un message d'erreur
+            error_log('Le fichier image n\'existe pas : ' . $imagePath);
+        }
+
+
+        $this->smarty->assign(array(
+            'popup_image' => $imagePath,
+            'popup_name' => $popup[0]["popup_name"]
+        ));
+
+        // if (Configuration::get('POPUPACTIVE') == 1 && $popup[0]["active"] == 1) {
         //     $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
         // }
         // $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');

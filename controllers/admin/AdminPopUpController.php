@@ -154,12 +154,45 @@ class AdminPopUpController extends ModuleAdminController
             ],
             'submit' => [
                 'title' => 'Save',
-                'class' => 'btn btn-primary'
+                'class' => 'btn btn-primary',
+                'name' => 'submitAddpopup'
             ]
         ];
 
         return parent::renderForm();
     }
 
+    public function postProcess()
+    {
+        if (Tools::isSubmit('submitAddpopup')) {
+            if($_FILES['popup_image']['error'] == UPLOAD_ERR_OK)
+            {
+                $targetDir = _PS_MODULE_DIR_. $this->module->name .'/views/img/';
 
+                if(!file_exists($targetDir))
+                {
+                    mkdir($targetDir, 0755, true);
+                }
+
+                $targetFile = $targetDir.basename($_FILES["popup_image"]["name"]);
+
+                $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+                if($imageFileType == 'jpg' || $imageFileType == 'png')
+                {
+                    move_uploaded_file($_FILES["popup_image"]["tmp_name"], $targetFile);
+                }
+                else
+                {
+                    $this->errors[] = $this->l('Seuls les fichiers JPG et PNG sont autorisés.');
+                }
+            }
+            else
+            {
+                $this->errors[] = $this->l('Erreur lors de l\'upload du fichier.');
+            }
+        }
+
+        return parent::postProcess();
+    }
 }
