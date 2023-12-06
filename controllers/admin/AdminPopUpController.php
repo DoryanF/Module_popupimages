@@ -12,7 +12,14 @@ class AdminPopUpController extends ModuleAdminController
         $this->identifier = PopUp::$definition['primary'];
         $this->_orderBy = PopUp::$definition['primary'];
         $this->bootstrap = true;
-        
+
+        $this->fieldImageSettings = [];
+        $this->fieldImageSettings['popup_image'] = array(
+            'name' => 'popup_image',
+            'dir' => _PS_MODULE_DIR_.'popupimage/views/img/'
+        );
+
+
         parent::__construct();
 
         $this->fields_list = [
@@ -22,7 +29,10 @@ class AdminPopUpController extends ModuleAdminController
             ],
             'popup_image' => [
                 'title' => 'Image',
-                'search' => true
+                'search' => true,
+                'options' => [
+                    'src_field' => 'popup_image'
+                ]
             ],
             'date_add' => [
                 'title' => 'Date début',
@@ -59,9 +69,7 @@ class AdminPopUpController extends ModuleAdminController
     public function renderForm()
     {
         $selected_cat = json_decode(
-            Configuration::get(
-                'CODEPROMOCATEGORIES'
-            )
+            Configuration::get('category')
         );
 
         if (!is_array($selected_cat)) {
@@ -70,9 +78,8 @@ class AdminPopUpController extends ModuleAdminController
 
         $tree = array(
             'selected_categories' => $selected_cat,
-            'use_search' => true,
             'use_checkbox' => true,
-            'id' => 'id_category_tree',
+            'id' => 'category',
         );
 
         $this->fields_form = [
@@ -90,7 +97,7 @@ class AdminPopUpController extends ModuleAdminController
                     'type' => 'file',
                     'label' => $this->l('Image'),
                     'name' => 'popup_image',
-                    'required' => true,
+                    'required' => true
                 ],
                 [
                     'type' => 'date',
@@ -159,7 +166,18 @@ class AdminPopUpController extends ModuleAdminController
             ]
         ];
 
+        
+
         return parent::renderForm();
+    }
+
+    public function renderImage($path)
+    {
+        if (file_exists($path)){
+            return '<img src="'.$path.'">';
+        } else {
+            return;
+        }    
     }
 
     public function postProcess()
@@ -181,6 +199,8 @@ class AdminPopUpController extends ModuleAdminController
                 if($imageFileType == 'jpg' || $imageFileType == 'png')
                 {
                     move_uploaded_file($_FILES["popup_image"]["tmp_name"], $targetFile);
+
+                    $imageName = basename($_FILES["popup_image"]["name"]);
                 }
                 else
                 {
@@ -191,6 +211,41 @@ class AdminPopUpController extends ModuleAdminController
             {
                 $this->errors[] = $this->l('Erreur lors de l\'upload du fichier.');
             }
+
+            $id_popup = (int)Tools::getValue('id_popup');
+
+            if ($id_popup > 0) {
+                // Si id_popup existe, effectue une mise à jour
+                $selectedCategories = Tools::getValue('affiche_categories');
+                $selectedCategoriesJson = json_encode($selectedCategories);
+    
+                $sql = 'UPDATE ' . _DB_PREFIX_ . 'popups 
+                        SET 
+                            popup_name = "' . Tools::getValue('popup_name') . '",
+                            popup_image = "' . $imageName . '",
+                            date_add = "' . Tools::getValue('date_add') . '",
+                            date_end = "' . Tools::getValue('date_end') . '",
+                            link = "' . Tools::getValue('link') . '",
+                            active = "' . Tools::getValue('active') . '",
+                            affiche_home = "' . Tools::getValue('affiche_home') . '",
+                            affiche_categories = \'' . $selectedCategoriesJson . '\'
+                        WHERE id_popup = ' . $id_popup;
+    
+                Db::getInstance()->execute($sql);
+            } else {
+                // Sinon, effectue une insertion
+                $selectedCategories = Tools::getValue('affiche_categories');
+                $selectedCategoriesJson = json_encode($selectedCategories);
+    
+                $sql = 'INSERT INTO ' . _DB_PREFIX_ . 'popups 
+                        (popup_name, popup_image, date_add, date_end, link, active, affiche_home, affiche_categories) 
+                        VALUES 
+                        ("' . Tools::getValue('popup_name') . '", "' . $imageName . '", "' . Tools::getValue('date_add') . '", "' . Tools::getValue('date_end') . '", "' . Tools::getValue('link') . '", "' . Tools::getValue('active') . '", "' . Tools::getValue('affiche_home') . '", \'' . $selectedCategoriesJson . '\')';
+    
+                Db::getInstance()->execute($sql);
+            }
+
+
         }
 
         return parent::postProcess();

@@ -1,10 +1,8 @@
-// $( document ).ready(function() {
-//     if (!localStorage.getItem("modalShow")) {
-//         $('#exampleModalCenter').modal('show');
+$( document ).ready(function() {
+    if (!localStorage.getItem("modalShow")) {
+        $('#exampleModalCenter').modal('show');
 
-//         localStorage.setItem("modalShow");
+        localStorage.setItem("modalShow", "true");
 
-//     }
-// });
-
-$('#exampleModalCenter').modal('show');
+    }
+});

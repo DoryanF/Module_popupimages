@@ -10,7 +10,7 @@ class PopUp extends ObjectModel
     public $link;
     public $active;
     public $affiche_home;
-    public $affiche_category;
+    public $affiche_categories;
 
     public static $definition = [
         'table' => 'popups',
@@ -23,7 +23,7 @@ class PopUp extends ObjectModel
             'link' => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => false],
             'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
             'affiche_home' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'affiche_categories' => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => false]
+            'affiche_categories' => ['type' => self::TYPE_STRING, 'validate'=> 'isString', 'required' => false]
         ]
     ];
 

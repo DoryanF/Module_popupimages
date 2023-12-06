@@ -137,6 +137,8 @@ class PopUpImage extends Module
                 return $this->displayConfirmation('Bien enregistré !');
             }
                 return $this->displayError('un problème est survenue');
+
+                
         }
     }
 
@@ -199,26 +201,26 @@ class PopUpImage extends Module
     {
         $popup = PopUp::getPopUpActive();
         $link = new Link();
-        dump($link->getBaseLink());
-        // dump(Tools::getMediaServer(_PS_MODULE_DIR_.$this->name.'/views/img/'.$popup[0]["popup_image"]));
-        $imagePath = _PS_MODULE_DIR_ . $this->name . '/views/img/' . $popup[0]["popup_image"];
+        dump(_PS_MODULE_DIR_);
+        $imagePath = $link->getBaseLink() . '/modules/' . $this->name . '/views/img/' . $popup[0]["popup_image"];
 
         if (!file_exists($imagePath)) {
             // Log ou affiche un message d'erreur
             error_log('Le fichier image n\'existe pas : ' . $imagePath);
         }
 
-
         $this->smarty->assign(array(
             'popup_image' => $imagePath,
             'popup_name' => $popup[0]["popup_name"]
+
+
         ));
 
         // if (Configuration::get('POPUPACTIVE') == 1 && $popup[0]["active"] == 1) {
         //     $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
         // }
-        // $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
+        $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
 
-        // return $this->display(__FILE__,'/views/templates/hooks/modal_popup.tpl');
+        return $this->display(__FILE__,'/views/templates/hooks/modal_popup.tpl');
     }
 }
