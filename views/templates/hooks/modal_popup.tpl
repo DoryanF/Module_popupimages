@@ -8,6 +8,7 @@
   </div>
 </div>
 
-{if $activeDefil == 1}
-    
-{/if}
+
+<script type="text/javascript">
+    var categ = {$categ};
+</script>

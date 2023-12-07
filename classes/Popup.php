@@ -23,7 +23,7 @@ class PopUp extends ObjectModel
             'link' => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => false],
             'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
             'affiche_home' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'affiche_categories' => ['type' => self::TYPE_STRING, 'validate'=> 'isString', 'required' => false]
+            'affiche_categories' => ['type' => self::TYPE_STRING, 'validate'=> 'isSerializedArray', 'required' => false]
         ]
     ];
 

@@ -13,8 +13,7 @@ class AdminPopUpController extends ModuleAdminController
         $this->_orderBy = PopUp::$definition['primary'];
         $this->bootstrap = true;
 
-        $this->fieldImageSettings = [];
-        $this->fieldImageSettings['popup_image'] = array(
+        $this->fieldImageSettings = array(
             'name' => 'popup_image',
             'dir' => _PS_MODULE_DIR_.'popupimage/views/img/'
         );
@@ -30,9 +29,8 @@ class AdminPopUpController extends ModuleAdminController
             'popup_image' => [
                 'title' => 'Image',
                 'search' => true,
-                'options' => [
-                    'src_field' => 'popup_image'
-                ]
+                'align' => 'center',
+                'callback' => 'renderImagePublic'
             ],
             'date_add' => [
                 'title' => 'Date début',
@@ -171,15 +169,6 @@ class AdminPopUpController extends ModuleAdminController
         return parent::renderForm();
     }
 
-    public function renderImage($path)
-    {
-        if (file_exists($path)){
-            return '<img src="'.$path.'">';
-        } else {
-            return;
-        }    
-    }
-
     public function postProcess()
     {
         if (Tools::isSubmit('submitAddpopup')) {
@@ -240,7 +229,14 @@ class AdminPopUpController extends ModuleAdminController
                 $sql = 'INSERT INTO ' . _DB_PREFIX_ . 'popups 
                         (popup_name, popup_image, date_add, date_end, link, active, affiche_home, affiche_categories) 
                         VALUES 
-                        ("' . Tools::getValue('popup_name') . '", "' . $imageName . '", "' . Tools::getValue('date_add') . '", "' . Tools::getValue('date_end') . '", "' . Tools::getValue('link') . '", "' . Tools::getValue('active') . '", "' . Tools::getValue('affiche_home') . '", \'' . $selectedCategoriesJson . '\')';
+                        ("' . Tools::getValue('popup_name') . '", 
+                        "' . $imageName . '", 
+                        "' . Tools::getValue('date_add') . '", 
+                        "' . Tools::getValue('date_end') . '", 
+                        "' . Tools::getValue('link') . '", 
+                        "' . Tools::getValue('active') . '", 
+                        "' . Tools::getValue('affiche_home') . '", 
+                        \'' . $selectedCategoriesJson . '\')';
     
                 Db::getInstance()->execute($sql);
             }
@@ -249,5 +245,18 @@ class AdminPopUpController extends ModuleAdminController
         }
 
         return parent::postProcess();
+    }
+
+    protected function renderImage($value, $popup)
+    {
+        $imagePath = _PS_MODULE_DIR_.'popupimage/views/img/'.$value;
+        $imageUrl = Tools::getHttpHost(true).__PS_BASE_URI__.'modules/popupimage/views/img/'.$value;
+    
+        return '<img src="'.$imageUrl.'" alt="'.$value.'" style="max-width: 50px; max-height: 50px;" />';
+    }
+
+    public function renderImagePublic($value, $popup)
+    {
+        return $this->renderImage($value, $popup);
     }
 }

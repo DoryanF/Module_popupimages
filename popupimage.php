@@ -201,7 +201,27 @@ class PopUpImage extends Module
     {
         $popup = PopUp::getPopUpActive();
         $link = new Link();
-        dump(_PS_MODULE_DIR_);
+
+        $url = explode('/',$_SERVER['REQUEST_URI']);
+        $url2 = explode('-',end($url));
+
+
+        $categpopup = json_decode($popup[0]["affiche_categories"]);
+        $categ = 'home';
+        if($this->context->controller->php_self == 'category')
+        {
+            foreach ($categpopup as $data) {
+                if($url2[0] == $data)
+                {
+                    $categ = $data;
+                    break;
+                }
+            }
+            $this->smarty->assign(array(
+                'categ' => $categ
+            ));
+        }
+
         $imagePath = $link->getBaseLink() . '/modules/' . $this->name . '/views/img/' . $popup[0]["popup_image"];
 
         if (!file_exists($imagePath)) {
@@ -211,16 +231,15 @@ class PopUpImage extends Module
 
         $this->smarty->assign(array(
             'popup_image' => $imagePath,
-            'popup_name' => $popup[0]["popup_name"]
-
-
+            'popup_name' => $popup[0]["popup_name"],
+            'categ' => $categ
         ));
 
-        // if (Configuration::get('POPUPACTIVE') == 1 && $popup[0]["active"] == 1) {
-        //     $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
-        // }
-        $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
+        if (Configuration::get('POPUPACTIVE') == 1 && $popup[0]["active"] == 1) {
+            $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
+            
+            return $this->display(__FILE__,'/views/templates/hooks/modal_popup.tpl');
+        }
 
-        return $this->display(__FILE__,'/views/templates/hooks/modal_popup.tpl');
     }
 }
