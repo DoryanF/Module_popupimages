@@ -2,7 +2,9 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <img src="{$popup_image}" alt="{$popup_name}" style="height: 600px; width: 600px"/>
+        <a href="{$link}">
+          <img src="{$popup_image}" alt="{$popup_name}" style="height: 600px; width: 600px"/>
+        </a>
       </div>
     </div>
   </div>

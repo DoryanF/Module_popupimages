@@ -23,13 +23,27 @@ class PopUp extends ObjectModel
             'link' => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => false],
             'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
             'affiche_home' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'affiche_categories' => ['type' => self::TYPE_STRING, 'validate'=> 'isSerializedArray', 'required' => false]
+            'affiche_categories' => ['type' => self::TYPE_STRING, 'validate'=> 'isString', 'required' => false]
         ]
     ];
 
     public static function getPopUpActive()
     {
         $sql = 'SELECT * FROM '._DB_PREFIX_.'popups WHERE active = 1 ORDER BY id_popup ASC LIMIT 1';
+
+        return DB::getInstance()->executeS($sql);
+    }
+
+    public static function  getCategory($id_popup)
+    {
+        $sql = 'SELECT affiche_categories FROM '._DB_PREFIX_.'popups WHERE id_popup = '.$id_popup;
+
+        return DB::getInstance()->executeS($sql);
+    }
+
+    public static function getImage($id_popup)
+    {
+        $sql = 'SELECT popup_image FROM '._DB_PREFIX_.'popups WHERE id_popup = '.$id_popup;
 
         return DB::getInstance()->executeS($sql);
     }

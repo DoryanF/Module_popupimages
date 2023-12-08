@@ -204,10 +204,14 @@ class PopUpImage extends Module
 
         $url = explode('/',$_SERVER['REQUEST_URI']);
         $url2 = explode('-',end($url));
-
+        dump(PopUp::getImage(4));
+        $dateAdd = new DateTime($popup[0]["date_add"]);
+        $dateEnd = new DateTime($popup[0]["date_end"]);
+        $currentDate = new DateTime();
 
         $categpopup = json_decode($popup[0]["affiche_categories"]);
         $categ = 'home';
+
         if($this->context->controller->php_self == 'category')
         {
             foreach ($categpopup as $data) {
@@ -219,6 +223,13 @@ class PopUpImage extends Module
             }
             $this->smarty->assign(array(
                 'categ' => $categ
+            ));
+        }
+
+        if(!empty($popup[0]["link"]))
+        {
+            $this->smarty->assign(array(
+                'link' => $popup[0]["link"]
             ));
         }
 
@@ -236,9 +247,13 @@ class PopUpImage extends Module
         ));
 
         if (Configuration::get('POPUPACTIVE') == 1 && $popup[0]["active"] == 1) {
-            $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
-            
-            return $this->display(__FILE__,'/views/templates/hooks/modal_popup.tpl');
+            if($dateAdd < $currentDate && $dateEnd > $currentDate)
+            {
+                $this->context->controller->registerJavascript('js_script_modal','modules/popupimage/views/js/script.js');
+                
+                return $this->display(__FILE__,'/views/templates/hooks/modal_popup.tpl');
+
+            }
         }
 
     }

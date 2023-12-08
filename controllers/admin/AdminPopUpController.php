@@ -66,12 +66,22 @@ class AdminPopUpController extends ModuleAdminController
 
     public function renderForm()
     {
-        $selected_cat = json_decode(
-            Configuration::get('category')
-        );
+        $id_popup = (int)Tools::getValue('id_popup');
+        $data = null;
+    
+        if ($id_popup > 0) {
+            $data = PopUp::getCategory($id_popup);
+            $image = PopUp::getImage($id_popup);
+        }
 
-        if (!is_array($selected_cat)) {
-            $selected_cat = array($selected_cat);
+        $selected_cat = null;
+
+        if ($data && isset($data[0]["affiche_categories"])) {
+            $selected_cat = json_decode($data[0]["affiche_categories"]);
+
+            if (!is_array($selected_cat)) {
+                $selected_cat = array($selected_cat);
+            }
         }
 
         $tree = array(
@@ -95,7 +105,8 @@ class AdminPopUpController extends ModuleAdminController
                     'type' => 'file',
                     'label' => $this->l('Image'),
                     'name' => 'popup_image',
-                    'required' => true
+                    'required' => true,
+                    'placeholder' => $image[0]["popup_image"]
                 ],
                 [
                     'type' => 'date',
@@ -164,10 +175,10 @@ class AdminPopUpController extends ModuleAdminController
             ]
         ];
 
-        
-
         return parent::renderForm();
     }
+
+    
 
     public function postProcess()
     {
